@@ -25,6 +25,7 @@
     var canvas = document.getElementById('myCanvas');
     var context = canvas.getContext('2d');
     var data;
+
     $.getJSON("data.json", function(info) {
       data = info["data"];
       //  }); //***** closes at end of script *****
@@ -45,49 +46,34 @@
             } else {
               seconds = parseFloat(data[i][item]);
             }
+            index = false;
             if (Math.pow((seconds + xoffset - mouse.x), 2) + Math.pow((y - mouse.y), 2) < Math.pow(15, 2)) {
+              context.beginPath();
+              context.arc(seconds + xoffset, y, 5, 0, 2 * Math.PI);
+              context.fillStyle = 'yellow';
+              context.fill();
+              context.stroke();
+
               context.beginPath();
               context.clearRect(100, 0, 400, 60);
               context.fillStyle = 'black';
               context.fill();
-              context.font = 'italic 20pt Calibri';
+              context.font = '15pt Calibri';
               context.fillText(data[0]['competition'][i - 1] + ' ' + data[0]['date'][i - 1], 150, 30);
               context.fillText(item + 'm split, ' + data[i][item], 150, 55);
               context.stroke();
-              index = false;
-            }
-          }
-        }
-      }
-
-      function graph() {
-        for (var i = 1; i < data.length; i++) {
-          for (var item in data[i]) {
-            xoffset = 100;
-            var seconds;
-            y = canvas.height - 100 - i * yDivision
-            index = data[i][item].indexOf(":");
-            if (index != -1) {
-              seconds = parseFloat(data[i][item].slice(2, data[i][item].length));
-              seconds += 60 * parseFloat(data[i][item][0]);
             } else {
-              seconds = parseFloat(data[i][item]);
-            }
-            context.beginPath();
-            context.arc(seconds + xoffset, y, 5, 0, 2 * Math.PI);
-            if (data[0]['pool'][i - 1] == 'sc') {
-              context.fillStyle = 'red';
+              context.beginPath();
+              context.arc(seconds + xoffset, y, 5, 0, 2 * Math.PI);
+              if (data[0]['pool'][i - 1] == 'sc') {
+                context.fillStyle = 'red';
+              }
+              if (data[0]['pool'][i - 1] == 'lc') {
+                context.fillStyle = 'blue';
+              }
               context.fill();
+              context.stroke();
             }
-            if (data[0]['pool'][i - 1] == 'lc') {
-              context.fillStyle = 'blue';
-              context.fill();
-            }
-            context.font = 'italic 10pt Calibri';
-            context.fillText(data[0]['competition'][i - 1], 5, y);
-            context.fillText(data[0]['date'][i - 1], 5, y + 15);
-            context.stroke();
-            index = false;
           }
         }
       }
@@ -126,9 +112,11 @@
         context.lineTo(canvas.width - 100, canvas.height - 100);
         context.stroke();
         for (var i = 1; i < 11; i++) {
+          // draw the vertical lines
           context.beginPath();
           context.moveTo(100 + 30 * i, canvas.height - 90);
           context.lineTo(100 + 30 * i, 80);
+          // put in times on x-axis
           var time;
           if (i % 2 == 0) {
             time = i / 2 + ':00';
@@ -139,10 +127,41 @@
           x = 100 + 30 * i;
           context.translate(x, y);
           context.rotate(-Math.PI / 2);
+          context.font = 'italic 10pt Calibri';
           context.fillText(time, 0, 0);
           context.rotate(Math.PI / 2);
           context.translate(-x, -y);
           context.stroke();
+        }
+
+        // draw points
+        for (var i = 1; i < data.length; i++) {
+          for (var item in data[i]) {
+            xoffset = 100;
+            var seconds;
+            y = canvas.height - 100 - i * yDivision
+            index = data[i][item].indexOf(":");
+            if (index != -1) {
+              seconds = parseFloat(data[i][item].slice(2, data[i][item].length));
+              seconds += 60 * parseFloat(data[i][item][0]);
+            } else {
+              seconds = parseFloat(data[i][item]);
+            }
+            context.beginPath();
+            context.arc(seconds + xoffset, y, 5, 0, 2 * Math.PI);
+            if (data[0]['pool'][i - 1] == 'sc') {
+              context.fillStyle = 'red';
+            }
+            if (data[0]['pool'][i - 1] == 'lc') {
+              context.fillStyle = 'blue';
+            }
+            // context.fillStyle = 'black';
+            context.fill();
+            context.font = 'italic 10pt Calibri';
+            context.fillText(data[0]['competition'][i - 1], 5, y);
+            context.fillText(data[0]['date'][i - 1], 5, y + 15);
+            context.stroke();
+          }
         }
       }
 
@@ -158,7 +177,6 @@
 
       start();
       connect();
-      graph();
       window.addEventListener('mousemove', mouseMoveListener, false);
     }); // end of $.getJSON function
   </script>
