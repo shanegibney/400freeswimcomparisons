@@ -120,6 +120,53 @@
     }];
     var yDivision = (canvas.height - 200) / (data.length - 1);
 
+    function mouseMoveListener(evt) {
+      mouse = getMousePosition(evt);
+
+      for (var i = 1; i < data.length; i++) {
+        for (var item in data[i]) {
+          y = canvas.height - 100 - i * yDivision
+          index = data[i][item].indexOf(":");
+          var seconds;
+          if (index != -1) {
+            seconds = parseFloat(data[i][item].slice(2, data[i][item].length));
+            seconds += 60 * parseFloat(data[i][item][0]);
+          } else {
+            seconds = parseFloat(data[i][item]);
+          }
+          if (Math.pow((seconds + xoffset - mouse.x), 2) + Math.pow((y - mouse.y), 2) < Math.pow(10, 2)) {
+            context.beginPath();
+            context.clearRect(100, 0, 400, 60);
+            context.fillStyle = 'black';
+            context.fill();
+            context.font = 'italic 20pt Calibri';
+            context.fillText(data[0]['competition'][i - 1] + ' ' + data[0]['date'][i - 1], 150, 30);
+            context.fillText(item + 'm split, ' + data[i][item], 150, 55);
+            context.stroke();
+            index = false;
+          }
+        }
+        // if (index == -1) {
+        //   seconds = parseFloat(data[i][item].slice(2, data[i][item].length));
+        //   seconds += 60 * parseFloat(data[i][item][0]);
+        //   parseFloat(data[i][item]);
+        //   if (Math.pow((seconds + xoffset - mouse.x), 2) + Math.pow((y - mouse.y), 2) < Math.pow(10, 2)) {
+        //     console.log('on shape');
+        //
+        //     context.beginPath();
+        //     context.clearRect(100, 0, 400, 55);
+        //     context.fillStyle = 'black';
+        //     context.fill();
+        //     context.font = 'italic 20pt Calibri';
+        //     context.fillText(data[0]['competition'][i - 1] + ' ' + data[0]['date'][i - 1], 150, 30);
+        //     context.fillText(item + 'm split, ' + data[i][item], 150, 55);
+        //     context.stroke();
+        //     index = false;
+        //   }
+        // }
+      }
+    }
+
     function graph() {
       for (var i = 1; i < data.length; i++) {
         for (var item in data[i]) {
@@ -220,9 +267,21 @@
         context.stroke();
       }
     }
+
+    function getMousePosition(evt) {
+      mouseX = evt.clientX - canvas.offsetLeft;
+      mouseY = evt.clientY - canvas.offsetTop;
+      mouse = {
+        x: mouseX,
+        y: mouseY
+      };
+      return mouse;
+    }
+
     start();
     connect();
     graph();
+    window.addEventListener('mousemove', mouseMoveListener, false);
   </script>
 </body>
 
