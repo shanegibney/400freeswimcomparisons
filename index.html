@@ -133,7 +133,7 @@
           context.translate(-x, -y);
           context.stroke();
         }
-
+        connect();
         // draw points
         for (var i = 1; i < data.length; i++) {
           for (var item in data[i]) {
@@ -147,26 +147,21 @@
             } else {
               seconds = parseFloat(data[i][item]);
             }
+            context.beginPath();
+            context.arc(seconds + xoffset, y, 5, 0, 2 * Math.PI);
+            if (data[0]['pool'][i - 1] == 'sc') {
+              context.fillStyle = 'red';
+            }
+            if (data[0]['pool'][i - 1] == 'lc') {
+              context.fillStyle = 'blue';
+            }
+            // context.fillStyle = 'black';
+            context.fill();
+            context.font = 'italic 10pt Calibri';
+            context.fillText(data[0]['competition'][i - 1], 5, y);
+            context.fillText(data[0]['date'][i - 1], 5, y + 15);
+            context.stroke();
           }
-        }
-        for (var i = 0; i < data[0]["date"].length; i++) {
-          //competition and date on y-axis
-          y = canvas.height - 125 - i * yDivision
-          context.beginPath();
-          // context.arc(seconds + xoffset, y, 5, 0, 2 * Math.PI);
-          if (data[0]['pool'][i] == 'sc') {
-            context.fillStyle = 'red';
-          }
-          if (data[0]['pool'][i] == 'lc') {
-            context.fillStyle = 'blue';
-          }
-          // context.fillStyle = 'black';
-          console.log('asdfghjkl');
-          context.fill();
-          context.font = 'italic 10pt Calibri';
-          context.fillText(data[0]['competition'][i], 5, y);
-          context.fillText(data[0]['date'][i], 5, y + 15);
-          context.stroke();
         }
       }
 
@@ -181,7 +176,7 @@
       }
 
       start();
-      connect();
+      // connect();
       window.addEventListener('mousemove', mouseMoveListener, false);
     }); // end of $.getJSON function
   </script>
